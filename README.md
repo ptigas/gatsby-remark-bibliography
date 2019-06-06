@@ -2,8 +2,9 @@
 
 gatsby-remark-bibliography adds bibtex to gatsby. Inspired and reused code from http://distill.pub.
 
-## Usage
+![bibtex](https://user-images.githubusercontent.com/208803/59069825-539e0f80-88b0-11e9-85cf-060d515c345b.gif)
 
+## Usage
 
 Add a `bibliography` tag inside your markdown e.g.
 ```
