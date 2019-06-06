@@ -1,6 +1,6 @@
 # gatsby-remark-bibliography
 
-gatsby-remark-bibliography adds bibtex to gatsby. Inspired and reused code from http://distill.pub.
+gatsby-remark-bibliography adds bibtex to gatsby. Inspired by and reused code from http://distill.pub.
 
 ![bibtex](https://user-images.githubusercontent.com/208803/59069825-539e0f80-88b0-11e9-85cf-060d515c345b.gif)
 
