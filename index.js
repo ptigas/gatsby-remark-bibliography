@@ -1,10 +1,8 @@
 "use strict";
 const visit = require(`unist-util-visit`);
 const bibtexParse = require(`bibtex-parse-js`);
-const remarkMath = require(`remark-math`);
 
 module.exports = ({ markdownAST }, { components }) => {
-
 
 function author_string(ent, template, sep, finalSep){
   if (ent.author == null) { return ''; }
@@ -166,7 +164,6 @@ const bibliography = new Map();
     }
   })
 
-  console.log(bibliography);
   visit(markdownAST, `text`, node => {
     var citekeys = node.value.match(/\\cite{([^}]*)}/g);
     //console.log(citekeys);
@@ -175,7 +172,7 @@ const bibliography = new Map();
       const keys = keys_str.split(',');
 
       const cite_string = inline_cite_short(keys, bibliography);
-      console.log(cite_string);
+
       var cite_hover_str = '';
       keys.map((key,n) => {
         if (n>0) cite_hover_str += '<br><br>';
@@ -185,7 +182,7 @@ const bibliography = new Map();
 
       const orig_string = '';//node.value;
       const replacement = `<span id="citation-${n}" data-hover="${cite_hover_str}">${orig_string}<span class="citation-number">${cite_string}</span></span>`;
-      console.log(keys_str);
+
       node.type = `html`;
       node.value = node.value.replace("\\cite{" + keys_str + "}", replacement);
     }
