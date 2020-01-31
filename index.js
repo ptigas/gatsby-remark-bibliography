@@ -1,8 +1,27 @@
 "use strict";
 const visit = require(`unist-util-visit`);
 const bibtexParse = require(`bibtex-parse-js`);
+const fs = require(`fs`)
 
-module.exports = ({ markdownAST }, { components }) => {
+module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
+
+  const bibliography = new Map();
+
+  // let's read the markdown
+  const bibtex_f = getNode(markdownNode.parent).dir + '/bibliography.bib';
+  let bibtex = '';
+  if (fs.existsSync(bibtex_f)) {
+    bibtex = fs.readFileSync(bibtex_f, `utf-8`);
+  }
+
+  const parsedEntries = bibtexParse.toJSON(bibtex);
+  for (const entry of parsedEntries) {
+    for (const [key, value] of Object.entries(entry.entryTags)) {
+      entry.entryTags[key.toLowerCase()] = normalizeTag(value);
+    }
+    entry.entryTags.type = entry.entryType;
+    bibliography.set(entry.citationKey, entry.entryTags);
+  }
 
   function author_string(ent, template, sep, finalSep) {
     if (ent.author == null) { return ''; }
@@ -146,7 +165,6 @@ module.exports = ({ markdownAST }, { components }) => {
     return '[' + keys.map(cite_string).join(', ') + ']';
   }
 
-  const bibliography = new Map();
   visit(markdownAST, "html", (node, index, parent) => {
     console.log(node.value)
     if (node.value.startsWith(`<bibliography>`)) {
@@ -164,7 +182,6 @@ module.exports = ({ markdownAST }, { components }) => {
       }
     }
   })
-
 
   visit(markdownAST, `text`, node => {
     var bibtex = node.value.match(/@@bibliography@@([^]*)@@bibliography@@/gm);
