@@ -153,7 +153,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   function inline_cite_short(keys, bibliography) {
     function cite_string(key) {
       if (bibliography.get(key)) {
-        if (!(key in citations)) {
+        if (!(citations.includes(key))) {
           citations.push(key)
         }
         var n = citations.indexOf(key) + 1;
@@ -166,7 +166,6 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   }
 
   visit(markdownAST, "html", (node, index, parent) => {
-    console.log(node.value)
     if (node.value.startsWith(`<bibliography>`)) {
       parent.type = "div"
 
@@ -226,7 +225,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   visit(markdownAST, `text`, node => {
     var bibtex = node.value.match(/@@bibliography@@([^]*)@@bibliography@@/gm);
     if (bibtex && bibtex.length > 0) {
-      let res = '<ol>';
+      let res = '<ol class="bibliography">';
 
       citations.forEach(key => {
         res += '<li>' + bibliography_cite(bibliography.get(key)) + '</li>';
@@ -239,7 +238,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
 
   visit(markdownAST, "html", (node, index, parent) => {
     if (node.value.startsWith(`<bibliography>`)) {
-      let res = '<ol>';
+      let res = '<ol class="bibliography">';
 
       citations.forEach(key => {
         res += '<li>' + bibliography_cite(bibliography.get(key)) + '</li>';
