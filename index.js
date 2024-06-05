@@ -101,9 +101,9 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
 
   function bibliography_cite(ent, fancy) {
     if (ent) {
-      var cite = '<b>' + ent.title + '</b> ';
-      cite += link_string(ent) + '<br>';
-      cite += author_string(ent, '${L}, ${I}', ', ', ' and ');
+      var cite = '<div class="title">' + ent.title + '</div> ';
+      // cite += link_string(ent) + '<br>';
+      cite += '<div class="authors">' + author_string(ent, '${L}, ${I}', ', ', ' and ');
       if (ent.year || ent.date) {
         cite += ', ' + (ent.year || ent.date) + '. ';
       } else {
@@ -111,6 +111,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
       }
       cite += venue_string(ent);
       cite += doi_string(ent);
+      cite += "</div>";
       return cite;
       /*var cite =  author_string(ent, "${L}, ${I}", ", ", " and ");
       if (ent.year || ent.date){
@@ -153,7 +154,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   function inline_cite_short(keys, bibliography) {
     function cite_string(key) {
       if (bibliography.get(key)) {
-        if (!(citations.includes(key))) {
+        if (!(key in citations)) {
           citations.push(key)
         }
         var n = citations.indexOf(key) + 1;
@@ -166,6 +167,7 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   }
 
   visit(markdownAST, "html", (node, index, parent) => {
+    console.log(node.value)
     if (node.value.startsWith(`<bibliography>`)) {
       parent.type = "div"
 
@@ -225,12 +227,12 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
   visit(markdownAST, `text`, node => {
     var bibtex = node.value.match(/@@bibliography@@([^]*)@@bibliography@@/gm);
     if (bibtex && bibtex.length > 0) {
-      let res = '<ol class="bibliography">';
+      let res = '<div class="bibliography">';
 
       citations.forEach(key => {
-        res += '<li>' + bibliography_cite(bibliography.get(key)) + '</li>';
+        res += '<div class="bib_entry">' + bibliography_cite(bibliography.get(key)) + '</div>';
       });
-      res += '</ol>';
+      res += '</div>';
       node.type = `html`;
       node.value = res;
     }
@@ -238,12 +240,12 @@ module.exports = ({ markdownAST, markdownNode, getNode }, { components }) => {
 
   visit(markdownAST, "html", (node, index, parent) => {
     if (node.value.startsWith(`<bibliography>`)) {
-      let res = '<ol class="bibliography">';
+      let res = '<div class="bibliography">';
 
       citations.forEach(key => {
-        res += '<li>' + bibliography_cite(bibliography.get(key)) + '</li>';
+        res += '<div class="bib_entry">' + bibliography_cite(bibliography.get(key)) + '</div>';
       });
-      res += '</ol>';
+      res += '</div>';
       node.value = res;
     }
   });
